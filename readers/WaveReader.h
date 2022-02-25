@@ -2,6 +2,10 @@
 #define MATH_PI 3.141592
 #endif
 
+#ifndef MAX_FREQ
+#define MAX_FREQ 20000
+#endif
+
 #ifndef ETU2_WAVEREADER_H
 #define ETU2_WAVEREADER_H
 
@@ -31,17 +35,18 @@ struct WaveChunk {
     unsigned long size; // Chunk data size
 };
 
+typedef std::complex<double> coamp;
+
 class WaveReader {
+public:
     WaveMetadata metadata{};
     short int *data;
-    unsigned short int *Amplitudes;
     int SampleSize;
     int SamplesTotal;
 
-public:
     explicit WaveReader(const char *fileName, bool debug = false);
 
-    void PrintSamples();
+    std::vector<coamp> GetComplexAmplitudes(unsigned int begin, unsigned int end = 0) const;
 };
 
 

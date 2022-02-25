@@ -24,10 +24,8 @@ WaveReader::WaveReader(const char *fileName, bool debug) {
     memset(data, 0, sizeof(short int) * SamplesTotal);
 
 //        Reading data
-    for (int i = 0; i < SamplesTotal; i++) {
+    for (int i = 0; i < SamplesTotal; i++)
         fread(&data[i], SampleSize, 1, waveFile);
-        Amplitudes[i] = data[i] + SHRT_MAX + 1;
-    }
 
 //        Closing file
     fclose(waveFile);
@@ -44,13 +42,22 @@ WaveReader::WaveReader(const char *fileName, bool debug) {
         printf("Number of Channels: %hd\n", metadata.Channels);
         printf("Sample Rate: %ld\n", metadata.SampleRate);
         printf("Sample Rate * Bits/Sample * Channels / 8: %ld\n", metadata.ByteRate);
-        printf("Bits per Sample * Channels / 8.1: %hd\n", metadata.BlockAlign);
+        printf("Bits per Sample * Channels / 8: %hd\n", metadata.BlockAlign);
         printf("Bits per Sample: %hd\n", metadata.BitsPerSample);
         printf("Samples count: %i\n", SamplesTotal);
     }
 }
 
-void WaveReader::PrintSamples() {
-    for (int i = 0; i < SamplesTotal; ++i)
-        printf("%d ", Amplitudes[i]);
+std::vector<coamp> WaveReader::GetComplexAmplitudes(unsigned int begin, unsigned int end) const {
+    std::vector<coamp> ComplexAmplitudes;
+    for (unsigned int k = 0, N = end - begin; k < MAX_FREQ + 1; ++k) {
+        auto amplitude = coamp(0.0f, 0.0f);
+        for (int n = 0; n < N; ++n) {
+            double X = 2 * MATH_PI * k * n / N;
+            amplitude += coamp(data[begin + n], 0) * coamp(cos(X), sin(X));
+        }
+        amplitude /= N;
+        ComplexAmplitudes.push_back(amplitude);
+    }
+    return ComplexAmplitudes;
 }
