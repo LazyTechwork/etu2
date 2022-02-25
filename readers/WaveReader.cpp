@@ -9,7 +9,7 @@ WaveReader::WaveReader(const char *fileName, bool debug) {
     WaveChunk chunk{};
     while (true) {
         fread(&chunk, sizeof(chunk), 1, waveFile);
-        if (*(unsigned int *) &chunk.DATA == 0x61746164) // 0x61746164 is for "data"
+        if (*(unsigned int *) &chunk.DATA == 0x61746164) // 0x61746164 is for "data" in BIG-ENDIAN
             break;
         fseek(waveFile, chunk.size, SEEK_CUR);
     }
@@ -20,12 +20,14 @@ WaveReader::WaveReader(const char *fileName, bool debug) {
 
 //        Acquiring space for data store and emptying it
     data = new short int[SamplesTotal];
-    Frequencies = new std::vector<fft_base>(SamplesTotal);
+    Amplitudes = new unsigned short int[SamplesTotal];
     memset(data, 0, sizeof(short int) * SamplesTotal);
 
 //        Reading data
-    for (int i = 0; i < SamplesTotal; i++)
+    for (int i = 0; i < SamplesTotal; i++) {
         fread(&data[i], SampleSize, 1, waveFile);
+        Amplitudes[i] = data[i] + SHRT_MAX + 1;
+    }
 
 //        Closing file
     fclose(waveFile);
@@ -50,5 +52,5 @@ WaveReader::WaveReader(const char *fileName, bool debug) {
 
 void WaveReader::PrintSamples() {
     for (int i = 0; i < SamplesTotal; ++i)
-        printf("%d ", data[i]);
+        printf("%d ", Amplitudes[i]);
 }

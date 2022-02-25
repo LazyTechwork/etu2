@@ -34,6 +34,7 @@ struct WaveChunk {
 class WaveReader {
     WaveMetadata metadata{};
     short int *data;
+    unsigned short int *Amplitudes;
     int SampleSize;
     int SamplesTotal;
 
