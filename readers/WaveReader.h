@@ -14,7 +14,14 @@
 #include <complex>
 #include <vector>
 #include <cmath>
+#include <numeric>
 
+struct FrequencyHistogram {
+    int histogramHeader[7];
+    double histogramValue[7];
+
+    FrequencyHistogram(const int *histogramHeader, const double *histogramValue);
+};
 
 struct WaveMetadata {
     char RIFF[4];                  // RIFF Header
@@ -39,6 +46,7 @@ typedef std::complex<double> coamp;
 
 class WaveReader {
 public:
+    int *histogramHeader;
     WaveMetadata metadata{};
     short int *data;
     int SampleSize;
@@ -47,6 +55,8 @@ public:
     explicit WaveReader(const char *fileName, bool debug = false);
 
     std::vector<coamp> GetComplexAmplitudes(unsigned int begin, unsigned int end = 0) const;
+
+    double *GetFrequencyHistogram(int sampleOffset);
 };
 
 

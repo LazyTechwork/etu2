@@ -1,6 +1,7 @@
 #include "WaveReader.h"
 
 WaveReader::WaveReader(const char *fileName, bool debug) {
+    histogramHeader = new int[7]{50, 100, 1000, 2000, 5000, 10000, 20000};
     //        Opening file and reading metadata at the top of the binary
     FILE *waveFile = fopen(fileName, "rb");
     fread(&metadata, sizeof(metadata), 1, waveFile);
@@ -20,7 +21,7 @@ WaveReader::WaveReader(const char *fileName, bool debug) {
 
 //        Acquiring space for data store and emptying it
     data = new short int[SamplesTotal];
-    Amplitudes = new unsigned short int[SamplesTotal];
+//    Amplitudes = new unsigned short int[SamplesTotal];
     memset(data, 0, sizeof(short int) * SamplesTotal);
 
 //        Reading data
@@ -61,3 +62,39 @@ std::vector<coamp> WaveReader::GetComplexAmplitudes(unsigned int begin, unsigned
     }
     return ComplexAmplitudes;
 }
+
+double *WaveReader::GetFrequencyHistogram(int sampleOffset) {
+    const int dataSize = SamplesTotal;
+    const auto sampleRate = metadata.SampleRate;
+    int sampleTo = sampleOffset +
+                   (sampleOffset + sampleRate <= dataSize ? sampleRate : dataSize - sampleOffset);
+
+    auto notFreqsButOk = data;
+
+
+    unsigned int histogramData[]{0, 0, 0, 0, 0, 0, 0};
+
+    unsigned short int val;
+    for (int i = sampleOffset; i < sampleTo; ++i) {
+        val = notFreqsButOk[i];
+        for (int hi = 0, from, to; hi < 7; ++hi) {
+            from = hi != 0 ? histogramHeader[hi - 1] : 0;
+            to = histogramHeader[hi] + histogramHeader[hi] / 10;
+            if (from <= val && val < to) {
+                histogramData[hi]++;
+                break;
+            }
+        }
+    }
+
+    const double histogramWeight = std::accumulate(
+            std::begin(histogramData), std::end(histogramData), 0.0);
+
+    auto *histogramValues = new double[7];
+    for (int i = 0; i < 7; ++i)
+        histogramValues[i] = histogramData[i] / histogramWeight;
+
+
+    return histogramValues;
+}
+

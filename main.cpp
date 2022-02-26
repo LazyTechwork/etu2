@@ -1,6 +1,6 @@
 #include <iostream>
-#include <numeric>
 #include "readers/WaveReader.h"
+#include "terminal/Histogram.h"
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -8,26 +8,15 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    WaveReader reader(argv[1], true);
-    auto cas = reader.GetComplexAmplitudes(200, 800);
+    WaveReader reader(argv[1]);
+    double *hg = reader.GetFrequencyHistogram(0);
 
-    const int histogram[]{50, 100, 1000, 2000, 5000, 10000, 20000};
-    const auto ComplexAbsoluteAccumulate = [&](coamp a, coamp b) {
-        return std::abs(a) + std::abs(b);
-    };
+    Terminal::printHistogram(reader.histogramHeader, hg, 7, 0.0, 1.0, 0.1);
 
-    for (int hId = 0; hId < 7; ++hId) {
-        int h = histogram[hId];
-        int hStart = hId != 0 ? histogram[hId - 1] : 0;
-        printf(
-                "%dHz: %f \n", h,
-                std::accumulate(cas.begin() + hStart,
-                                cas.begin() + h,
-                                0.0,
-                                ComplexAbsoluteAccumulate)
-                / (h - hStart)
-        );
+    /*for (int i = 128; i < 256; ++i) {
+        printf("%d\t%c\n", i, i);
     }
-
+    printf("\n");*/
+    getchar();
     return 0;
 }
