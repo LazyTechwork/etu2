@@ -1,5 +1,4 @@
-#ifndef ETU2_HISTOGRAM_H
-#define ETU2_HISTOGRAM_H
+#pragma once
 
 #define HISTOGRAM_BAR (wchar_t) 219
 #define HISTOGRAM_SPACE L' '
@@ -17,4 +16,3 @@ namespace Terminal {
     void printHistogram(int *header, double *data, unsigned int count, double min, double max, double step);
 }
 
-#endif //ETU2_HISTOGRAM_H

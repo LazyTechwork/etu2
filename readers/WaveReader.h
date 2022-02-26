@@ -1,13 +1,7 @@
-#ifndef MATH_PI
-#define MATH_PI 3.141592
-#endif
+#pragma once
 
-#ifndef MAX_FREQ
+#define MATH_PI 3.141593
 #define MAX_FREQ 20000
-#endif
-
-#ifndef ETU2_WAVEREADER_H
-#define ETU2_WAVEREADER_H
 
 #include <iostream>
 #include <cstring>
@@ -58,6 +52,3 @@ public:
 
     double *GetFrequencyHistogram(int sampleOffset);
 };
-
-
-#endif //ETU2_WAVEREADER_H
