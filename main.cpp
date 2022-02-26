@@ -9,14 +9,19 @@ int main(int argc, char *argv[]) {
     }
 
     WaveReader reader(argv[1]);
-    double *hg = reader.GetFrequencyHistogram(0);
+    double *hg;
+    unsigned int second = 0;
 
-    Terminal::printHistogram(reader.histogramHeader, hg, 7, 0.0, 1.0, 0.1);
-
-    /*for (int i = 128; i < 256; ++i) {
-        printf("%d\t%c\n", i, i);
+    using namespace std;
+    while (true) {
+        hg = reader.GetFrequencyHistogram(second * reader.metadata.SampleRate);
+        wcout << endl;
+        wcout << "Frequency histogram at " << second << "s" << endl << endl;
+        Terminal::printHistogram(reader.histogramHeader, hg, 7, 0.0, 1.0, 0.1);
+        getchar();
+        wcout << flush;
+        system("cls");
+        ++second;
     }
-    printf("\n");*/
-    getchar();
     return 0;
 }
