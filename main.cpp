@@ -6,7 +6,7 @@
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
-        printf("Not found file in passed arguments");
+        printf("Pass filepath in first argument");
         return -1;
     }
 

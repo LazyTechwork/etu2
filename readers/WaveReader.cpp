@@ -4,6 +4,12 @@ WaveReader::WaveReader(const char *fileName, bool debug) {
     histogramHeader = new int[7]{50, 100, 1000, 2000, 5000, 10000, 20000};
     //        Opening file and reading metadata at the top of the binary
     FILE *waveFile = fopen(fileName, "rb");
+
+    if (waveFile == nullptr) {
+        std::wcout << "Cannot open file at " << fileName << std::endl;
+        exit(-1);
+    }
+
     fread(&metadata, sizeof(metadata), 1, waveFile);
 
 //        Seeking for data chunk
