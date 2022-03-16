@@ -1,8 +1,8 @@
 #include "WaveReader.h"
 
-WaveReader::WaveReader(const char *fileName, bool debug) {
+WaveReader::WaveReader(const char *fileName) {
     histogramHeader = new int[7]{50, 100, 1000, 2000, 5000, 10000, 20000};
-    //        Opening file and reading metadata at the top of the binary
+//        Opening file and reading metadata at the top of the binary
     FILE *waveFile = fopen(fileName, "rb");
 
     if (waveFile == nullptr) {
@@ -36,23 +36,6 @@ WaveReader::WaveReader(const char *fileName, bool debug) {
 
 //        Closing file
     fclose(waveFile);
-
-//        If debug argument passed - printing debug information
-    if (debug) {
-        printf("File: %s\n", fileName);
-        printf("File Type: %s\n", metadata.RIFF);
-        printf("File Size: %ld\n", metadata.ChunkSize);
-        printf("WAV Marker: %s\n", metadata.WAVE);
-        printf("Format Name: %s\n", metadata.fmt);
-        printf("Format Length: %ld\n", metadata.Subchunk1Size);
-        printf("Format Type: %hd\n", metadata.AudioFormat);
-        printf("Number of Channels: %hd\n", metadata.Channels);
-        printf("Sample Rate: %ld\n", metadata.SampleRate);
-        printf("Sample Rate * Bits/Sample * Channels / 8: %ld\n", metadata.ByteRate);
-        printf("Bits per Sample * Channels / 8: %hd\n", metadata.BlockAlign);
-        printf("Bits per Sample: %hd\n", metadata.BitsPerSample);
-        printf("Samples count: %i\n", SamplesTotal);
-    }
 }
 
 std::vector<coamp> WaveReader::GetComplexAmplitudes(unsigned int begin, unsigned int end) const {
@@ -69,7 +52,7 @@ std::vector<coamp> WaveReader::GetComplexAmplitudes(unsigned int begin, unsigned
     return ComplexAmplitudes;
 }
 
-double *WaveReader::GetFrequencyHistogram(int sampleOffset) {
+double *WaveReader::GetFrequencyHistogram(int sampleOffset) const {
     const int dataSize = SamplesTotal;
     const auto sampleRate = metadata.SampleRate;
     int sampleTo = sampleOffset +
@@ -103,4 +86,3 @@ double *WaveReader::GetFrequencyHistogram(int sampleOffset) {
 
     return histogramValues;
 }
-

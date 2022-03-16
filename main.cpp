@@ -1,10 +1,14 @@
 #include <iostream>
-#include "readers/WaveReader.h"
-#include "terminal/Histogram.h"
-#include <windows.h>
 #include <conio.h>
 
+#include "readers/WaveReader.h"
+#include "terminal/Histogram.h"
+#include "terminal/Keyboard.h"
+
 int main(int argc, char *argv[]) {
+    /*std::cout << _getch() << " " << _getch() << std::endl;
+    std::cout << (int) 'Q' << " " << (int) 'q' << std::endl;
+    return 1;*/
     if (argc < 2) {
         printf("Pass filepath in first argument");
         return -1;
@@ -30,29 +34,38 @@ int main(int argc, char *argv[]) {
         wcout.precision(5);
         for (int i = 0; i < 7; ++i)
             wcout << reader.histogramHeader[i] << "Hz\t" << hg[i] << endl;
+        wcout << endl << wstring(30, HISTOGRAM_FRAME_HORIZONTAL) << endl;
+        wcout << "Use left and right arrow keys to move over wav-file" << endl << "Press 'q' to exit" << endl;
     };
     render();
     while (true) {
-        if (kbhit()) {
-            _getch();
-            if (GetAsyncKeyState(VK_RIGHT)) {
-                if ((int) second + 1 > maxSeconds)
-                    second = maxSeconds;
-                else {
-                    ++second;
-                    render();
-                }
-            } else if (GetAsyncKeyState(VK_LEFT)) {
-                if ((int) second - 1 < 0)
-                    second = 0;
-                else {
-                    --second;
-                    render();
-                }
-            } else if (GetAsyncKeyState(0x51)) { // 0x51 is for Q-key
+        switch (_getch()) {
+            case 'q':
                 break;
-            }
+            case ARROW_PREFIX:
+                switch (_getch()) {
+                    case ARROW_RIGHT:
+                        if ((int) second + 1 > maxSeconds)
+                            second = maxSeconds;
+                        else {
+                            ++second;
+                            render();
+                        }
+                        break;
+                    case ARROW_LEFT:
+                        if ((int) second - 1 < 0)
+                            second = 0;
+                        else {
+                            --second;
+                            render();
+                        }
+                        break;
+                }
+                continue;
+            default:
+                continue;
         }
+        break;
     }
     return 0;
 }

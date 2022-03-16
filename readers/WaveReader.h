@@ -13,8 +13,6 @@
 struct FrequencyHistogram {
     int histogramHeader[7];
     double histogramValue[7];
-
-    FrequencyHistogram(const int *histogramHeader, const double *histogramValue);
 };
 
 struct WaveMetadata {
@@ -46,9 +44,9 @@ public:
     int SampleSize;
     int SamplesTotal;
 
-    explicit WaveReader(const char *fileName, bool debug = false);
+    explicit WaveReader(const char *fileName);
 
     std::vector<coamp> GetComplexAmplitudes(unsigned int begin, unsigned int end = 0) const;
 
-    double *GetFrequencyHistogram(int sampleOffset);
+    double *GetFrequencyHistogram(int sampleOffset) const;
 };
