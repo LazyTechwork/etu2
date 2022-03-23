@@ -8,4 +8,4 @@ set(CMAKE_CXX_STANDARD_LIBRARIES "-static-libgcc -static-libstdc++ ${CMAKE_CXX_S
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive")
 
 add_executable(lib_wave libraries/lib_wave.cpp readers/WaveReader.cpp readers/WaveReader.h terminal/Histogram.cpp terminal/Histogram.h terminal/Keyboard.h)
-add_executable(lib_encoder libraries/lib_encoder.cpp)
+add_executable(lib_bmpcode libraries/lib_bmpcode.cpp cli_tools/ArgsParser.cpp cli_tools/ArgsParser.h)
