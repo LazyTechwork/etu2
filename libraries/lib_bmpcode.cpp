@@ -50,12 +50,5 @@ int main(int argc, char *argv[]) {
         const unsigned int bmp_side = ceil(sqrt(file_size));
         BitmapWriter::CreateBitmap(filename + ".bmp", data, file_size, bmp_side, bmp_side);
     }
-
-    FILE *file = fopen("C:\\Users\\LazyTechwork\\Dev\\etu2\\test.bmp", "rb");
-    BitmapWriter::BITMAPFILEHEADER bitmapfileheader{0, 0};
-    BitmapWriter::BITMAPINFO bitmapinfo{0, 0, 0};
-    fread(&bitmapfileheader, sizeof(bitmapfileheader), 1, file);
-    fread(&bitmapinfo, sizeof(bitmapinfo), 1, file);
-    fclose(file);
     return 0;
 }
