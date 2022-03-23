@@ -1,16 +1,13 @@
 #include <iostream>
 #include <conio.h>
 
-#include "readers/WaveReader.h"
-#include "terminal/Histogram.h"
-#include "terminal/Keyboard.h"
+#include "../readers/WaveReader.h"
+#include "../terminal/Histogram.h"
+#include "../terminal/Keyboard.h"
 
 int main(int argc, char *argv[]) {
-    /*std::cout << _getch() << " " << _getch() << std::endl;
-    std::cout << (int) 'Q' << " " << (int) 'q' << std::endl;
-    return 1;*/
     if (argc < 2) {
-        printf("Pass filepath in first argument");
+        printf("Pass filepath as first argument");
         return -1;
     }
 
@@ -19,9 +16,10 @@ int main(int argc, char *argv[]) {
     unsigned int second = 0;
     auto maxSeconds = (unsigned int) floor((double) reader.SamplesTotal / reader.metadata.SampleRate);
 
-    using namespace std;
-    wcout << fixed;
+    std::wcout << std::fixed;
+
     auto render = [&] {
+        using namespace std;
         wcout << flush;
         system("cls");
 
@@ -37,6 +35,7 @@ int main(int argc, char *argv[]) {
         wcout << endl << wstring(30, HISTOGRAM_FRAME_HORIZONTAL) << endl;
         wcout << "Use left and right arrow keys to move over wav-file" << endl << "Press 'q' to exit" << endl;
     };
+
     render();
     while (true) {
         switch (_getch()) {
