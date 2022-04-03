@@ -5,8 +5,8 @@
 
 void BitmapWriter::CreateBitmap(
         const std::string &filepath, uint8_t *data, const long &dataSize,
-        const uint16_t &width,
-        const uint16_t &height
+        const int32_t &width,
+        const int32_t &height
 ) {
     FILE *file = fopen(filepath.c_str(), "wb");
     if (file == nullptr) {
@@ -14,7 +14,7 @@ void BitmapWriter::CreateBitmap(
         exit(-1);
     }
 
-    const auto bmp_row_size = (int) ceil(width / 4.0) * 4;
+    const uint32_t bmp_row_size = (uint32_t) ceil(width / 4.0) * 4;
 
     auto *header = new BitmapStructs::Header{
             (uint32_t) (bmp_row_size * height + sizeof(BitmapStructs::Header) +
@@ -25,7 +25,24 @@ void BitmapWriter::CreateBitmap(
             8,
             (1 << 8)
     };
-    fwrite(header, sizeof(BitmapStructs::Header), 1, file);
+
+    fwrite(&header->Signature, sizeof(BitmapStructs::Header::Signature), 1, file);
+    fwrite(&header->FileSize, sizeof(BitmapStructs::Header::FileSize), 1, file);
+    fwrite(&header->Reserved1, sizeof(BitmapStructs::Header::Reserved1), 1, file);
+    fwrite(&header->Reserved2, sizeof(BitmapStructs::Header::Reserved2), 1, file);
+    fwrite(&header->DataOffset, sizeof(BitmapStructs::Header::DataOffset), 1, file);
+    fwrite(&header->InfoHeaderSize, sizeof(BitmapStructs::Header::InfoHeaderSize), 1, file);
+    fwrite(&header->Width, sizeof(BitmapStructs::Header::Width), 1, file);
+    fwrite(&header->Height, sizeof(BitmapStructs::Header::Height), 1, file);
+    fwrite(&header->Planes, sizeof(BitmapStructs::Header::Planes), 1, file);
+    fwrite(&header->BitsPerPixel, sizeof(BitmapStructs::Header::BitsPerPixel), 1, file);
+    fwrite(&header->Compression, sizeof(BitmapStructs::Header::Compression), 1, file);
+    fwrite(&header->ImageSize, sizeof(BitmapStructs::Header::ImageSize), 1, file);
+    fwrite(&header->XPPM, sizeof(BitmapStructs::Header::XPPM), 1, file);
+    fwrite(&header->YPPM, sizeof(BitmapStructs::Header::YPPM), 1, file);
+    fwrite(&header->ColorPaletteSize, sizeof(BitmapStructs::Header::ColorPaletteSize), 1, file);
+    fwrite(&header->ImportantColors, sizeof(BitmapStructs::Header::ImportantColors), 1, file);
+
     delete header;
 
 //    Generating palette
@@ -42,31 +59,23 @@ void BitmapWriter::CreateBitmap(
     for (int i = 0; i < dataSize; i += width) {
 //        Writing data byte-by-byte
         for (int j = 0; j < width; ++j)
-            if (i + j > dataSize) {
-                fwrite(nullbyte, 1, sizeof(uint8_t), file);
-                printf("00 ");
-            } else {
-                fwrite(data + i + j, 1, sizeof(uint8_t), file);
-                printf("%02X ", *(data + i + j));
-            }
+            if (i + j > dataSize)
+                fwrite(nullbyte, 1, 1, file);
+            else
+                fwrite(data + i + j, 1, 1, file);
 
 //        Writing paddings
-        for (int j = 0, l = bmp_row_size - width; j < l; ++j) {
-            fwrite(nullbyte, 1, sizeof(uint8_t), file);
-            printf("00 ");
-        }
+        for (int j = 0, l = (int) bmp_row_size - width; j < l; ++j)
+            fwrite(nullbyte, 1, 1, file);
+
         ++rows_written;
         printf("\n");
     }
 
 //    Creating zero-rows to complete height
-    for (unsigned int i = 0, l = height - rows_written; i < l; ++i) {
-        for (int j = 0; j < bmp_row_size; ++j) {
+    for (unsigned int i = 0, l = height - rows_written; i < l; ++i)
+        for (int j = 0; j < bmp_row_size; ++j)
             fwrite(nullbyte, 1, sizeof(uint8_t), file);
-            printf("00 ");
-        }
-        printf("\n");
-    }
 
     fclose(file);
 }

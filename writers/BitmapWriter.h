@@ -4,6 +4,6 @@
 
 namespace BitmapWriter {
     void CreateBitmap(const std::string &filepath, uint8_t *data, const long &dataSize,
-                      const uint16_t &width,
-                      const uint16_t &height);
+                      const int32_t &width,
+                      const int32_t &height);
 };
