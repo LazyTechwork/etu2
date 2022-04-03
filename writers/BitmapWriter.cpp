@@ -48,8 +48,6 @@ void BitmapWriter::CreateBitmap(
     fwrite(&header->ColorPaletteSize, sizeof(BitmapStructs::Header::ColorPaletteSize), 1, file);
     fwrite(&header->ImportantColors, sizeof(BitmapStructs::Header::ImportantColors), 1, file);
 
-    delete header;
-
 //    Generating palette
     BitmapStructs::Color *color;
     for (int i = 0, l = (1 << 8) - 1; i <= l; ++i) {
@@ -84,5 +82,7 @@ void BitmapWriter::CreateBitmap(
 
     fclose(file);
     loader->stop();
+    std::cout << "Written BMP file: " << width << "x" << height << "px - " << header->FileSize << "B" << std::flush;
     delete loader;
+    delete header;
 }
