@@ -69,7 +69,6 @@ void BitmapWriter::CreateBitmap(
             fwrite(nullbyte, 1, 1, file);
 
         ++rows_written;
-        printf("\n");
     }
 
 //    Creating zero-rows to complete height
