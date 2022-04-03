@@ -1,10 +1,16 @@
 #include <iostream>
 #include <cstring>
 #include <cmath>
+#include <conio.h>
+#include <Windows.h>
 #include "../cli_tools/ArgsParser.h"
 #include "../writers/BitmapWriter.h"
 
 int main(int argc, char *argv[]) {
+    setlocale(0, "ru_RU.utf8");
+    SetConsoleOutputCP(CP_UTF8);
+    system("cls");
+
     auto args = ArgsParser(argc, argv);
     std::string filename;
     bool encode = false;
@@ -50,5 +56,6 @@ int main(int argc, char *argv[]) {
         const unsigned int bmp_side = ceil(sqrt(file_size));
         BitmapWriter::CreateBitmap(filename + ".bmp", data, file_size, bmp_side, bmp_side);
     }
+    _getch();
     return 0;
 }

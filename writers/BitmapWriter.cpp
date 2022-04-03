@@ -2,6 +2,9 @@
 #include <cmath>
 #include "BitmapWriter.h"
 #include "../commons/BitmapStructs.h"
+#include "../cli_tools/Loader.h"
+
+const auto *NULL_BYTE = new uint8_t(0);
 
 void BitmapWriter::CreateBitmap(
         const std::string &filepath, uint8_t *data, const long &dataSize,
@@ -13,6 +16,8 @@ void BitmapWriter::CreateBitmap(
         std::wcout << "Cannot open file at " << filepath.c_str() << std::endl;
         exit(-1);
     }
+
+    auto *loader = new Loader(L"Generating BMP file");
 
     const uint32_t bmp_row_size = (uint32_t) ceil(width / 4.0) * 4;
 
@@ -53,28 +58,31 @@ void BitmapWriter::CreateBitmap(
     }
     delete color;
 
-    const uint8_t *nullbyte = new uint8_t(0);
     unsigned int rows_written = 0;
 
     for (int i = 0; i < dataSize; i += width) {
 //        Writing data byte-by-byte
         for (int j = 0; j < width; ++j)
             if (i + j > dataSize)
-                fwrite(nullbyte, 1, 1, file);
+                fwrite(NULL_BYTE, 1, 1, file);
             else
                 fwrite(data + i + j, 1, 1, file);
 
 //        Writing paddings
         for (int j = 0, l = (int) bmp_row_size - width; j < l; ++j)
-            fwrite(nullbyte, 1, 1, file);
+            fwrite(NULL_BYTE, 1, 1, file);
 
         ++rows_written;
+        if (i % 7 == 0)
+            loader->loop();
     }
 
 //    Creating zero-rows to complete height
     for (unsigned int i = 0, l = height - rows_written; i < l; ++i)
         for (int j = 0; j < bmp_row_size; ++j)
-            fwrite(nullbyte, 1, sizeof(uint8_t), file);
+            fwrite(NULL_BYTE, 1, sizeof(uint8_t), file);
 
     fclose(file);
+    loader->stop();
+    delete loader;
 }
