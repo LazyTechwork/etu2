@@ -12,28 +12,28 @@ int main(int argc, char *argv[]) {
     system("cls");
 
     auto args = ArgsParser(argc, argv);
-    std::string filename;
+    std::string filepath;
     bool encode = false;
     if (args.has("encode")) {
-        filename = args.get("encode");
+        filepath = args.get("encode");
         encode = true;
     } else if (args.has("e")) {
-        filename = args.get("e");
+        filepath = args.get("e");
         encode = true;
     } else if (args.has("decode")) {
-        filename = args.get("decode");
+        filepath = args.get("decode");
     } else if (args.has("d")) {
-        filename = args.get("d");
+        filepath = args.get("d");
     } else {
         std::cout << "Insufficient arguments (expected 2)" << std::endl;
         return -1;
     }
 
     if (encode) {
-        FILE *file = fopen(filename.c_str(), "rb");
+        FILE *file = fopen(filepath.c_str(), "rb");
 
         if (file == nullptr) {
-            std::wcout << "Cannot open file at " << filename.c_str() << std::endl;
+            std::wcout << "Cannot open file at " << filepath.c_str() << std::endl;
             exit(-1);
         }
 
@@ -54,7 +54,12 @@ int main(int argc, char *argv[]) {
         fclose(file);
 
         const unsigned int bmp_side = ceil(sqrt(file_size));
-        BitmapWriter::CreateBitmap(filename + ".bmp", data, file_size, bmp_side, bmp_side);
+
+        std::size_t filenameDelimiterPosition = filepath.find_last_of("/\\");
+        BitmapWriter::CreateBitmap(filepath + ".bmp", data, file_size,
+                                   filepath.substr(filenameDelimiterPosition + 1),
+                                   (int32_t) bmp_side,
+                                   (int32_t) bmp_side);
     }
     _getch();
     return 0;

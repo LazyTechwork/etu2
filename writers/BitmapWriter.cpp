@@ -7,7 +7,10 @@
 const auto *NULL_BYTE = new uint8_t(0);
 
 void BitmapWriter::CreateBitmap(
-        const std::string &filepath, uint8_t *data, const long &dataSize,
+        const std::string &filepath,
+        uint8_t *data,
+        const long &dataSize,
+        const std::string &metadata,
         const int32_t &width,
         const int32_t &height
 ) {
@@ -24,7 +27,10 @@ void BitmapWriter::CreateBitmap(
     auto *header = new BitmapStructs::Header{
             (uint32_t) (bmp_row_size * height + sizeof(BitmapStructs::Header) +
                         (1 << 8) * sizeof(BitmapStructs::Color)),
-            sizeof(BitmapStructs::Header) + (1 << 8) * sizeof(BitmapStructs::Color),
+            static_cast<uint32_t>(
+                    sizeof(BitmapStructs::Header) +
+                    (1 << 8) * sizeof(BitmapStructs::Color)
+                    + (metadata.length() + 1) * sizeof(char) + sizeof(uint16_t)),
             width,
             height,
             8,
@@ -55,6 +61,11 @@ void BitmapWriter::CreateBitmap(
         fwrite(color, sizeof(BitmapStructs::Color), 1, file);
     }
     delete color;
+
+//    Metadata
+    uint16_t metadataSize = (metadata.length() + 1) * sizeof(char);
+    fwrite(&metadataSize, sizeof(uint16_t), 1, file);
+    fwrite(metadata.c_str(), metadataSize, 1, file);
 
     unsigned int rows_written = 0;
 
