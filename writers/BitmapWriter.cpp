@@ -54,15 +54,15 @@ void BitmapWriter::CreateBitmap(
     fwrite(&header->ColorPaletteSize, sizeof(BitmapStructs::Header::ColorPaletteSize), 1, file);
     fwrite(&header->ImportantColors, sizeof(BitmapStructs::Header::ImportantColors), 1, file);
 
-//    Generating palette
+    // Generating palette
     BitmapStructs::Color *color;
     for (int i = 0, l = (1 << 8) - 1; i <= l; ++i) {
         color = new BitmapStructs::Color{(uint8_t) i, (uint8_t) i, (uint8_t) i};
         fwrite(color, sizeof(BitmapStructs::Color), 1, file);
+        delete color;
     }
-    delete color;
 
-//    Metadata
+    // Metadata
     uint16_t metadataSize = (metadata.length() + 1) * sizeof(char);
     fwrite(&metadataSize, sizeof(uint16_t), 1, file);
     fwrite(metadata.c_str(), metadataSize, 1, file);
@@ -70,14 +70,14 @@ void BitmapWriter::CreateBitmap(
     unsigned int rows_written = 0;
 
     for (int i = 0; i < dataSize; i += width) {
-//        Writing data byte-by-byte
+        // Writing data byte-by-byte
         for (int j = 0; j < width; ++j)
             if (i + j > dataSize)
                 fwrite(NULL_BYTE, 1, 1, file);
             else
                 fwrite(data + i + j, 1, 1, file);
 
-//        Writing paddings
+        // Writing paddings
         for (int j = 0, l = (int) bmp_row_size - width; j < l; ++j)
             fwrite(NULL_BYTE, 1, 1, file);
 
@@ -86,7 +86,7 @@ void BitmapWriter::CreateBitmap(
             loader->loop();
     }
 
-//    Creating zero-rows to complete height
+    // Creating zero-rows to complete height
     for (unsigned int i = 0, l = height - rows_written; i < l; ++i)
         for (int j = 0; j < bmp_row_size; ++j)
             fwrite(NULL_BYTE, 1, sizeof(uint8_t), file);
