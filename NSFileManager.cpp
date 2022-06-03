@@ -78,6 +78,20 @@ int main(int argc, char *argv[]) {
                     }
                     break;
                 case FUNC_3:
+                    system("cls");
+                    std::cout << std::endl << "Make byte analysis" << std::endl << "Enter lower value (float 0-1): ";
+                    float arg;
+                    std::cin >> arg;
+                    std::string command = R"(start "" ")";
+                    command
+                            .append(lib_bytelysis)
+                            .append("\" \"")
+                            .append(current_directory)
+                            .append(directoryListing[selectedFile].cFileName)
+                            .append("\" --tr ")
+                            .append(std::to_string(arg));
+                    system(command.c_str());
+                    std::cout << std::endl;
                     break;
             }
         } else if (key == KEY_RETURN) {
