@@ -1,5 +1,4 @@
 #include <iostream>
-#include <cstring>
 #include <cmath>
 #include <conio.h>
 #include <Windows.h>

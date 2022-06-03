@@ -10,3 +10,5 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Bstatic,--whole-archi
 add_executable(lib_wave libraries/lib_wave.cpp readers/WaveReader.cpp readers/WaveReader.h terminal/Histogram.cpp terminal/Histogram.h terminal/Keyboard.h)
 add_executable(lib_bmpcode libraries/lib_bmpcode.cpp cli_tools/ArgsParser.cpp cli_tools/ArgsParser.h writers/BitmapWriter.cpp writers/BitmapWriter.h commons/BitmapStructs.h cli_tools/Loader.cpp cli_tools/Loader.h)
 add_executable(lib_bytelysis libraries/lib_bytelysis.cpp cli_tools/ArgsParser.cpp cli_tools/ArgsParser.h cli_tools/Loader.cpp cli_tools/Loader.h)
+
+add_executable(nsfm NSFileManager.cpp readers/FilesystemReader.cpp readers/FilesystemReader.cpp readers/FilesystemReader.h)
