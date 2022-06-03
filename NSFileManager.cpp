@@ -17,6 +17,10 @@ int main(int argc, char *argv[]) {
     TCHAR curDir[MAX_PATH];
     GetCurrentDirectory(MAX_PATH, curDir);
     current_directory = std::string(curDir) + std::string("\\");
+    const std::string libraries_path(current_directory);
+    const std::string lib_wave = current_directory + "lib_wave.exe";
+    const std::string lib_bmpcode = current_directory + "lib_bmpcode.exe";
+    const std::string lib_bytelysis = current_directory + "lib_bytelysis.exe";
     int key, selectedFile;
     COORD selectedFileConsolePos;
     CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
@@ -33,8 +37,7 @@ int main(int argc, char *argv[]) {
 //    }
 
 
-    while (true) {
-        key = _getch();
+    do {
         if (key == ARROW_PREFIX) {
             switch ((key = _getch())) {
                 case ARROW_DOWN:
@@ -51,8 +54,28 @@ int main(int argc, char *argv[]) {
         } else if (key == FUNC_PREFIX) {
             switch ((key = _getch())) {
                 case FUNC_1:
+                    if (!FilesystemReader::isDirectory(directoryListing[selectedFile])) {
+                        std::string command = R"(start "" ")";
+                        command
+                                .append(lib_wave)
+                                .append("\" \"")
+                                .append(current_directory)
+                                .append(directoryListing[selectedFile].cFileName)
+                                .append("\"");
+                        system(command.c_str());
+                    }
                     break;
                 case FUNC_2:
+                    if (!FilesystemReader::isDirectory(directoryListing[selectedFile])) {
+                        std::string command = R"(start "" ")";
+                        command
+                                .append(lib_bmpcode)
+                                .append("\" -encode \"")
+                                .append(current_directory)
+                                .append(directoryListing[selectedFile].cFileName)
+                                .append("\"");
+                        system(command.c_str());
+                    }
                     break;
                 case FUNC_3:
                     break;
@@ -63,7 +86,16 @@ int main(int argc, char *argv[]) {
                 GetCurrentDirectory(MAX_PATH, curDir);
                 current_directory = std::string(curDir) + std::string("\\");
                 isDirectoryDirty = true;
+            } else {
+                std::string command = R"(start "" ")";
+                command
+                        .append(current_directory)
+                        .append(directoryListing[selectedFile].cFileName)
+                        .append("\"");
+                system(command.c_str());
             }
+        } else if (key == CTRL_R) {
+            isDirectoryDirty = true;
         } else if (key == CTRL_C) {
             return 0;
         }
@@ -97,14 +129,17 @@ int main(int argc, char *argv[]) {
         SetConsoleTextAttribute(stdHandle, HIGHLIGHTED_TEXT);
         std::cout << " ENTER ";
         SetConsoleTextAttribute(stdHandle, STANDART_TEXT);
-        std::cout << " Get into ";
+        std::cout << " Open ";
+        SetConsoleTextAttribute(stdHandle, HIGHLIGHTED_TEXT);
+        std::cout << " ^R ";
+        SetConsoleTextAttribute(stdHandle, STANDART_TEXT);
+        std::cout << " Reload ";
         SetConsoleTextAttribute(stdHandle, HIGHLIGHTED_TEXT);
         std::cout << " ^C ";
         SetConsoleTextAttribute(stdHandle, STANDART_TEXT);
         std::cout << " To quit ";
         std::cout << std::endl << std::endl << "Current directory: " << current_directory << std::endl << std::endl;
 
-        std::cout << " SIZE NAME" << std::endl;
         for (int i = 0, entriesTotal = directoryListing.size(); i < entriesTotal; ++i) {
             std::cout << " ";
 
@@ -116,7 +151,7 @@ int main(int argc, char *argv[]) {
 
             WIN32_FIND_DATA file = directoryListing[i];
             bool isDir = FilesystemReader::isDirectory(file);
-            std::cout << file.nFileSizeHigh << " " << file.cFileName << (isDir ? "\\" : "");
+            std::cout << file.cFileName << (isDir ? "\\" : "");
 
             if (i == selectedFile)
                 SetConsoleTextAttribute(stdHandle, STANDART_TEXT);
@@ -125,8 +160,6 @@ int main(int argc, char *argv[]) {
         }
 
         SetConsoleCursorPosition(stdHandle, selectedFileConsolePos);
-    }
-
-    _getch();
-    return 0;
+        key = _getch();
+    } while (true);
 }

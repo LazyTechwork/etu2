@@ -40,3 +40,4 @@ CTestTestfile.cmake
 _deps
 *.bmp
 *.bin
+*.wav
